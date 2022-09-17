@@ -1,0 +1,169 @@
+
+<!-- saved from url=(0028)https://www.bgreco.net/band/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="./Band_Orchestra Seating Chart_files/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="./Band_Orchestra Seating Chart_files/jcanvas.min.js"></script>
+<script src="./Band_Orchestra Seating Chart_files/spectrum-1.8.0.min.js"></script>
+
+<script type="text/javascript" src="./Band_Orchestra Seating Chart_files/band.js"></script>
+<link rel="stylesheet" type="text/css" href="./Band_Orchestra Seating Chart_files/spectrum-1.8.0.min.css">
+<link rel="stylesheet" type="text/css" href="./Band_Orchestra Seating Chart_files/band.css">
+<link rel="stylesheet" type="text/css" href="./Band_Orchestra Seating Chart_files/bandprint.css" media="print" id="printcss">
+<title>Choir Scan</title>
+<meta name="description" content="A browser-based tool for generating the optimal choir standing arrangements.">
+</head>
+<body>
+<script src="./Band_Orchestra Seating Chart_files/three.js"></script>
+<div id="helplink" class="noprint"><a href="https://www.bgreco.net/band/help.html" onclick="showHelp(); return false;">Help / About</a></div>
+<p class="noprint">A browser-based tool for generating the optimal choir standing arrangements. Have fun!<br>
+<span id="loadlink"><a href="https://www.bgreco.net/band/#" onclick="return false;">Load your own choir data</a></span>
+<span id="loadcontainer" class="hidden">
+<span id="loadfilecontainer"><span style="color: green;">Select a saved chart from your computer:</span> <input type="file" accept=".txt,.pdf" id="fileinput"><br>
+</span>
+<span id="loadmessage" class="hidden" style="color: red;"></span>
+</p>
+<hr class="noprint">
+<div id="wrapper">
+<h1 class="title"></h1>
+<div id="debug" style="float: right; width: 500px; text-align: left; display: none;"><pre id="debug_json"></pre></div>
+<canvas id="canvas" width="1050" height="510" style="transform: none;">Sorry, your browser does not support Canvas. :(</canvas>
+<canvas id="guide_canvas" width="1050" height="510" class="noprint" style="transform: none;">Sorry, your browser does not support Canvas. :(</canvas>
+<p id="notestitle" class="noprint" title="Notes entered here will appear on the printed chart"><strong>Notes</strong> (to appear below printed chart)</p>
+<textarea id="notes" title="Notes entered here will appear on the printed chart" style="height: 46px;"></textarea>
+</div>
+<div id="input_container" class="noprint">
+<p>Chart title: <input id="title"></p>
+<div id="input_main"><p><b>Enter number of students per riser:</b><br><span style="color: #090;">Enter heights in inches or cm and voice parts as s, a, t, or b </span></p>
+<div id="rows">
+<p>Riser 1: <input id="row1" size="2" maxlength="2" tabindex="1"><a class="editlabellink" href="javascript:editLabels(1)" tabindex="2">Enter heights and voice parts</a></p><p>Riser 2: <input id="row2" size="2" maxlength="2" tabindex="1"><a class="editlabellink" href="javascript:editLabels(2)" tabindex="2">Enter heights and voice parts</a></p><p>Riser 3: <input id="row3" size="2" maxlength="2" tabindex="1"><a class="editlabellink" href="javascript:editLabels(3)" tabindex="2">Enter heights and voice parts </a></p><p>Riser 4: <input id="row4" size="2" maxlength="2" tabindex="1"><a class="editlabellink" href="javascript:editLabels(4)" tabindex="2">Enter heights and voice parts</a></p><p>Riser 5: <input id="row5" size="2" maxlength="2" tabindex="1"><a class="editlabellink" href="javascript:editLabels(5)" tabindex="2">Enter heights and voice parts </a></p><p>Riser 6: <input id="row6" size="2" maxlength="2" tabindex="1"><a class="editlabellink" href="javascript:editLabels(6)" tabindex="2">Enter heights and voice parts </a></p><p>Riser 7: <input id="row7" size="2" maxlength="2" tabindex="1"><a class="editlabellink" href="javascript:editLabels(7)" tabindex="2">Enter heights and voice parts</a></p><p>Riser 8: <input id="row8" size="2" maxlength="2" tabindex="1"><a class="editlabellink" href="javascript:editLabels(8)" tabindex="2">Enter heights and voice parts</a></p></div>
+<p><a href="javascript:addRow()">Add More Risers!</a></p>
+<p>Straight risers: <input type="button" id="btnstraightdown" value="-"> <input type="button" id="btnstraightup" value="+"> <span id="straight">0</span></p>
+<input type="checkbox" id="chknumbers" checked="checked" style="float: left"><div style="margin-left: 25px; margin-bottom: 7px;"><label for="chknumbers">Show numbers on seats</label></div>
+<input type="checkbox" id="chkrestart" style="float: left"><div style="margin-left: 25px; margin-bottom: 7px;"><label for="chkrestart" id="lblrestart">Restart numbers on each row</label></div>
+<div title="Only available if &#39;Restart numbers on each row&#39; is selected">
+<input type="checkbox" id="chkletters" style="float: left" disabled="disabled"><div style="margin-left: 25px; margin-bottom: 7px;"><label for="chkletters" class="disabled" id="lblletters">Give each row a letter</label></div>
+</div>
+<input type="checkbox" id="chkstands" style="float: left"><div style="margin-left: 25px; margin-bottom: 7px;"><label for="chkstands">Show music stands</label><span id="helpstands" class="help" style="display: none;"><br>Click the chart to toggle stands</span></div>
+<input type="checkbox" id="chkflip" style="float: left"><div style="margin-left: 25px; margin-bottom: 7px;"><label for="chkflip">Flip chart</label></div>
+Seat size: <input type="button" id="btnscaledown" value="-"> <input type="button" id="btnscaleup" value="+"> <span id="scale">100</span>%
+<p><a class= "hidden" href="javascript:editColors()">Edit chair colors</a></p>
+<p><input type="button" value="Generate" id="generate">
+<input type="button" value="Reset" id="reset"></p>
+</div>
+<div id="input_labels" style="display: none;">
+<p><b>Custom Chair Labels: Row <span id="lblcustomrow"></span></b><br>Enter one label per line.<br>Labels will be applied left to<br>right (as seen from the front).<br><small>Use <b>%</b> to indicate a line break.</small></p>
+<textarea id="txtlabels" style="width: 200px; height: 360px;"></textarea>
+<p>Label size: <input type="button" id="btnrowlabelscaledown" value="-"> <input type="button" id="btnrowlabelscaleup" value="+"></p>
+<p><input type="button" id="btnlabeldone" value="Done" style="font-size: 16pt;"></p><br><br><br><br>
+</div>
+<div id="input_colors" style="display: none;">
+<p><b>Chair Colors</b></p>
+<p>This screen allows you to set<br>chair colors (for example, by section).</p>
+<ol><li><b>Choose a color</b> from<br>the palette below</li>
+<li><b>Click a chair</b> to assign<br>the selected color</li></ol><br>
+<input type="checkbox" id="chkchaircolor" checked="checked" style="float: left"><div style="margin-left: 25px; margin-bottom: 7px;"><label for="chkchaircolor">Color chairs</label></div>
+<input type="checkbox" id="chklabelcolor" checked="checked" style="float: left"><div style="margin-left: 25px; margin-bottom: 7px;"><label for="chklabelcolor">Color chair labels</label></div>
+<p><input type="text" id="colorpicker"></p><br><span style="font-size: smaller;">Advanced: You can change the interior color<br>of the chairs by right-clicking them</span><br><br>
+<p><input type="button" id="btncolordone" value="Done" style="font-size: 16pt;"> <input type="button" id="btncolorreset" value="Reset colors"></p><br><br><br><br><br><br>
+</div>
+<div id="help"><div id="helpcontents"><style type="text/css">
+#helpstyle { font-family: sans-serif; }
+#helpstyle h1 { font-size: 130%; text-align: center; padding-top: 10px; margin-top: 0px; }
+#helpstyle h2 { font-size: 110%; margin-bottom: 3px; }
+#helpstyle > * { margin-left: 10px; margin-right: 10px; }
+#helpstyle p { margin-top: 6px; margin-bottom: 6px; }
+</style>
+<div id="helpstyle">
+<h1>Band/Orchestra Seating Chart Generator</h1>
+<p>A few years ago, my dad, an elementary school band teacher, asked me if I could create a
+tool that would make it easier to create seating charts. I though it sounded like a fun
+little exercise, so I did.</p>
+
+<p>Much to my surprise, it's become quite popular among those who I can only assume are teachers
+of the musical persuasion, getting on average 1,000 visits per week from dozens of different countries.
+And I think that's pretty cool!</p>
+
+<p>- <a href="https://www.bgreco.net/about" target="_blank">Brad Greco</a></p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHLwYJKoZIhvcNAQcEoIIHIDCCBxwCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYBuqnujuFAW9LHkK9t8+P/akKSThVIC9Lu1UG5bOlTZQqvvLrXf+zTEzlkY5OVu6QCaY94FE9/HryyIbs5OX7nZB6g4o8lIrkzLuzrws7J11Lc1d/ICVOW2wNtifEQyLqJuzVOxZH4svUBSekGpl32a/b67IadbPqmgG8fJixc0+jELMAkGBSsOAwIaBQAwgawGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQI0IfSc/3JTwSAgYizdfCENR97A7GiGARWfd0xMsWyTPZTd20/hZ3mbkk+c77Ko41H9EzPUK7qqOatTYinsQmBz3xg1LJphcgO6eUd4HYahYoZscIok1M4Ilv3UoNiV72YDFd2ApkSTeHFMXFXiEYNzj1EbEGdgFt7F72KwKRh33eFOjCy7zkwhD1QRFr1fmKx6LLsoIIDhzCCA4MwggLsoAMCAQICAQAwDQYJKoZIhvcNAQEFBQAwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMB4XDTA0MDIxMzEwMTMxNVoXDTM1MDIxMzEwMTMxNVowgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBR07d/ETMS1ycjtkpkvjXZe9k+6CieLuLsPumsJ7QC1odNz3sJiCbs2wC0nLE0uLGaEtXynIgRqIddYCHx88pb5HTXv4SZeuv0Rqq4+axW9PLAAATU8w04qqjaSXgbGLP3NmohqM6bV9kZZwZLR/klDaQGo1u9uDb9lr4Yn+rBQIDAQABo4HuMIHrMB0GA1UdDgQWBBSWn3y7xm8XvVk/UtcKG+wQ1mSUazCBuwYDVR0jBIGzMIGwgBSWn3y7xm8XvVk/UtcKG+wQ1mSUa6GBlKSBkTCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb22CAQAwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOBgQCBXzpWmoBa5e9fo6ujionW1hUhPkOBakTr3YCDjbYfvJEiv/2P+IobhOGJr85+XHhN0v4gUkEDI8r2/rNk1m0GA8HKddvTjyGw/XqXa+LSTlDYkqI8OwR8GEYj4efEtcRpRYBxV8KxAW93YDWzFGvruKnnLbDAF6VR5w/cCMn5hzGCAZowggGWAgEBMIGUMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbQIBADAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTgwODIwMjM0NzE4WjAjBgkqhkiG9w0BCQQxFgQU4Zf+zZxF0yc9oC3EciMneAGgXS0wDQYJKoZIhvcNAQEBBQAEgYAIJSx/znnAL6340pgW6GizcXuHUW2EslL+GzxRVRZ6afelHYR9UuYsFPUuiwlRbe4tYcZSSG+fHQrh9SWgnKfTBiOn3SLeRJ++6O6mEdIxir193EeSlbIOhnvORgzdb2ebszv32A2XVHucaVZXZDa+4c2ccf7QQgp0X6ZA3M0p0g==-----END PKCS7-----
+">
+<input type="image" src="./Band_Orchestra Seating Chart_files/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="./Band_Orchestra Seating Chart_files/pixel.gif" width="1" height="1">
+</form>
+
+<h1>FAQ / Advanced usage</h1>
+
+<h2>Printing</h2>
+<p>When you print the page using the <b>print</b> link or your browser's Print command, everything
+on the page except for the chart will be hidden automatically. For best results, print in
+landscape mode.</p>
+<p>Options for removing the extra information on the page (date, URL, page number) can be found
+in your browser's print settings.</p>
+
+<div id="partial"><h2>Partial rows / hidden chairs</h2>
+<p>Chairs may be hidden or shown by clicking on them. Hidden chairs are indicated by a large
+grey square on the screen, but will be completely hidden when printing.</p>
+<p>To create a partial row, first create a full row with more chairs than you need and then hide some of the chairs.</p></div>
+
+<h2>Music stands</h2>
+<p>Stands will be displayed when the <b>show music stands</b> checkbox is selected. The small gray
+boxes indicate where stands can be placed, click inside these boxes to turn the stands on or off.
+The boxes themselves will be hidden when printing.</p>
+
+<p>To create a row with only music stands (for percussion, etc), first create a normal row and
+then hide all the chairs by clicking on each one.</p>
+
+<h2>Custom labels (names) on chairs</h2>
+<p>To create custom labels on chairs, click the <b>edit labels</b> link beside each row. Each line of text that
+you type in the text box will be displayed over the a chair in the selected row (left to right). To restore the
+default numeric labels to a row, click its <b>edit labels</b> link and delete all text from the text box.</p>
+
+<h2>Coloring chairs</h2>
+<p>To set colors for chairs, first click the <b>edit chair colors</b> link. Select a color from the palette, and click
+on the chairs one at a time to make them the selected color. Use the checkboxes above the palette to control whether
+to color the chair outlines, labels, or both.</p>
+<p>If you want to change the color of the interior of the chairs, right-click on each chair after choosing a color.
+The checkboxes have no effect on the interior color.</p>
+
+<h2>Saving and sharing charts</h2>
+<p>If you want to save your chart settings to use later, click the <b>save this chart</b> link at the bottom.
+A file containing the chart data will be saved to your computer. Next time you want to return to your saved
+chart, click the <b>load saved chart</b> link and select the file that you saved.</p>
+<p>To share a chart with a co-worker, click the <b>send by email</b> link at the bottom of the page.</p>
+
+<h1>Changelog</h1>
+<p>2019-03-24: Add ability to generate a link to the chart without composing an email.</p>
+<p>2018-08-17: Add podium and podium music stand</p>
+<p>2018-08-15: Add Notes box and ability to set chair fill colors</p>
+<p>2018-03-01: Add ability to set chair colors</p>
+<p>2018-02-26: Add ability to flip chart to be seen from the perspective of the band members</p>
+<p>2018-02-24: Add ability to download charts as PDF</p>
+<p>2018-02-19: Make charts less blurry when printed</p>
+<p>2016-08-23: Add ability to set custom labels on chairs, save and load chart data to files, and send chart links by email</p>
+<p>2015-05-23: Allow chairs to be hidden, add help document, add option to create straight rows</p>
+<p>2014-09-22: Add seat scale option</p>
+<p>2014-02-24: Add music stand options, add save/load functionality</p>
+<p>2014-01-24: Add link to create additional rows (seriously, you guys needed more than 8?!?!)</p>
+<p>2013-03-04: Add option to add letters to each row</p>
+<p>2012-02-06: Fix for older browsers</p>
+<p>2012-02-04: First release</p>
+<p>&nbsp;</p>
+<div id="close" style="text-align: center; display: none;"><b><a href="javascript:closeHelp()">Close</a></b></div>
+<p>&nbsp;</p>
+</div>
+</div></div>
+</div>
+<div id="bottom" class="noprint">
+<p style="text-align: center;"><br>When you are finished, you can <a href="javascript:window.print()">print</a> this page (landscape mode is recommended) or <a href="javascript:savePdf()">download a PDF</a> of this chart.<br>
+You can also <a href="javascript:save()">save this chart</a> to edit later, <a href="javascript:link()">copy a link to this chart</a>, or <a href="javascript:email()">send a link to this chart by email</a>.</p>
+<div id="link-popup" style="display: none;"><div class="popup-close">X</div><p>Link to this chart:</p><input id="link" type="text" readonly="readonly" value="asdf"></div>
+<p style="text-align: center; display: none;" class="hidden" id="bottommessage"></p>
+<p style="text-align: center; display: none;" class="hidden" id="helpsave">Please contact <a href="mailto:brad@bgreco.net">brad@bgreco.net</a> for assistance and include the code below:<br>
+<textarea readonly="readonly" id="code"></textarea></p>
+<p style="margin-top: 50px"><a href="https://www.bgreco.net/">Home</a></p>
+</div>
+
+
+</body></html>

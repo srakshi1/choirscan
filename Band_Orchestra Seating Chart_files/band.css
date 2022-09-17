@@ -1,0 +1,157 @@
+#canvas {
+	width: 100%;
+	background-color: white;
+	max-width: 1050px;
+}
+
+#guide_canvas {
+	position: absolute;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+	max-width: 1050px;
+	pointer-events: none;
+}
+
+#wrapper {
+	width: 80%;
+	float: right;
+	position: relative;
+}
+
+#helpsave {
+	color: red;
+}
+
+#code {
+	font-family: monospace;
+	width: 50%;
+	height: 200px;
+}
+
+#loadcode {
+	font-family: monospace;
+}
+
+#help {
+	z-index: 100;
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.8);
+	display: none;
+}
+
+#helpcontents {
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	background-color: white;
+	height: 95%;
+	overflow-y: scroll;
+}
+
+#helplink {
+	float: right;
+}
+
+#close {
+	display: block !important;
+}
+
+#btncolorreset {
+	margin-left: 80px;
+}
+
+#notestitle {
+	margin-bottom: 5px;
+	margin-top: 20px;
+}
+
+#notes {
+	display: block;
+	width: 800px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+}
+
+#bottom {
+	clear: both;
+	position: relative;
+}
+
+#link-popup {
+	position: absolute;
+	background-color: red;
+	margin-left: auto;
+	margin-right: auto;
+	left: 100px;
+	right: -100px;
+	width: 425px;
+	top: -25px;
+	box-shadow: 0px 0px 5px 1px rgb(74, 74, 74);
+	padding: 5px;
+	color: white;
+	background-color: #444;
+	display: none;
+}
+
+#link {
+	width: 425px;
+}
+
+#link-popup p {
+	margin-top: 0px;
+}
+
+.title {
+	margin: 0;
+	max-width: 1050px;
+	text-align: center;
+	position: absolute;
+	width: 100%;
+}
+
+.disabled {
+	color: gray;
+}
+
+.help {
+	color: #090;
+	display: none;
+}
+
+.hidden {
+	display: none;
+}
+
+.popup-close {
+	float: right;
+	border: 1px solid white;
+	font-family: arial;
+	width: 18px;
+	text-align: center;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+p {
+	margin: 8px 0px;
+}
+
+ol {
+	margin: 0px auto 8px auto;
+}
+
+/* Spectrum overrides */
+.sp-palette {
+	width: 41px;
+	max-width: 41px;
+}
+
+.sp-palette-row-5 {
+	border-bottom: 1px solid black;
+}
